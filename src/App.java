@@ -5,6 +5,7 @@ import gui.widgets.WindowContainer;
 
 import shared.util.Config;
 import shared.util.Console;
+import shared.util.Conversion;
 import shared.util.Parser;
 
 @SuppressWarnings("unused")
@@ -15,9 +16,11 @@ public class App {
 		// Config.set("console.consoleColorsEnabled", "true");
 		// Config.save();
 		// System.out.println(Config.get("console.asd"));
-		System.out.println("\""
-				+ Console.parseConsoleColors(
-						"\\<text #5B84FF>ok\\<bg #f73987>take it easy now<text white><text reset><bg reset>")
-				+ "\"");
+		// StringBuilder t = new StringBuilder();
+		// t.append("\u001B[38;2;255;165;0m");
+		// t.append("test");
+		// System.out.println(t.toString());
+		// Config.set("console.consoleColorsEnabled", "false");
+		Console.println("<full #3adb1a>hellow world<full reset>something");
 	}
 }

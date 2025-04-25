@@ -17,52 +17,59 @@ public class Console {
 	final private static String TEXT_CODE = "\u001B[38;2;";
 	final private static String BG_CODE = "\u001B[48;2;";
 
-	/**
-	 * Takes a given list of {@code Object} values, converts them into strings
-	 * using {@code toString()} (if possible), and applies the console color tag
-	 * parser to scan the strings for tokens like {@code $text-color},
-	 * {@code $bg-color}, etc.
-	 * 
-	 * <p>
-	 * If {@code Console.consoleColorsEnabled} is set to {@code false}, then this
-	 * method will remove all console tags like {@code $text-color} and
-	 * {@code $bg-color} from any processed string values.
-	 * 
-	 * @param contents the list of {@code Object} values to toString
-	 * @return a cleaned String that either consumes the console color tokens, or
-	 *         removes them, based on {@code Console.consoleColorsEnabled}
-	 * 
-	 * @see #parseConsoleColors(Object...)
-	 */
-	public static String parseConsoleColors(Object... contents) {
-		if (Config.get("console.consoleColorsEnabled", Boolean.class))
-			return substituteASCIIColors(Formatter.objectArrayToString(contents));
-		else
-			return Formatter
-					.objectArrayToString(contents)
-					.replaceAll(COLOR_TAG_PATTERN + " ", "");
+	private static int jumpToChar(String str, int startIndex, char ch) {
+		int len = str.length();
+		int end = startIndex;
+		while (end < len && str.charAt(end) != ch)
+			end++;
+		return end;
 	}
 
-	// <text blue>hello world</text>
-	// <text #F8WHU9>hello world</text>
-	private static String substituteASCIIColors(String str, boolean resetAtEnd) {
+	/**
+	 * Replaces the console color styling tags in a given string into their
+	 * respective ASCII codes. The color styling tag syntax is as follows:
+	 * 
+	 * <p>
+	 * <ul>
+	 * <li>{@code <directive colorName>} - looks up {@code colorName} in system
+	 * config to find the corresponding hex color</li>
+	 * <li>{@code <directive #xxxxxx>} - parses the given hex string and uses it's
+	 * color directly
+	 * </ul>
+	 * 
+	 * <p>
+	 * The valid {@code directive} values are:
+	 * <ul>
+	 * <li>{@code <text ...>} - sets the text color</li>
+	 * <li>{@code <bg ...>} - sets the background color</li>
+	 * </ul>
+	 * 
+	 * @param str        the string to parse the color styling tags in
+	 * @param resetAtEnd whether or not the color styles reset at the end of the
+	 *                   string ({@code true} means they reset, {@code false} means
+	 *                   they don't)
+	 * @return the parsed string with the ASCII code colors
+	 */
+	public static String parseConsoleColors(String str, boolean resetAtEnd) {
 		StringBuilder out = new StringBuilder();
-		StringBuilder ASCIIBuffer = new StringBuilder();
 		char lastToken = '\0';
 		int len = str.length();
+		boolean colorsEnabled = Config.get(
+				"console.consoleColorsEnabled",
+				Boolean.class);
+
 		for (int index = 0; index < len; index++) {
 			char token = str.charAt(index);
 			if (token == '<' && lastToken != '\\') {
 				// build directive
 				int start = index + 1;
-				int end = start;
-				while (end < len && str.charAt(end) != ' ') {
-					end++;
-				}
+				int end = jumpToChar(str, start, ' ');
+				String fg = null;
+				String bg = null;
+				String reset = null;
 
-				String fg, bg, reset;
-				String directive = str.substring(start, end);
-				switch (directive) {
+				// check the directive
+				switch (str.substring(start, end)) {
 					case "text" -> {
 						fg = TEXT_CODE;
 						reset = TEXT_RESET;
@@ -72,31 +79,44 @@ public class Console {
 						reset = BG_RESET;
 					}
 					case "full" -> {
+						fg = TEXT_CODE;
+						bg = BG_CODE;
 						reset = FULL_RESET;
 					}
-					default -> throw new ParsingException("Invalid directive to console colors");
+					default -> throw new ParsingException(
+							"Invalid directive to console colors");
 				}
 
 				// build color
 				start = end + 1;
-				end = start;
-				while (end < len && str.charAt(end) != '>') {
-					end++;
-				}
+				end = jumpToChar(str, start, '>');
+
+				// apply the color
 				String color = str.substring(start, end);
 				String colorProp = Config.get("console.colors." + color);
-				if (color.equals("reset")) {
-					ASCIIBuffer.append(reset);
-				} else {
-					if (colorProp != null)
-						color = colorProp;
 
-					int[] rgb = Conversion.hexToRGB(color);
-					ASCIIBuffer.append(rgb[0]).append(";");
-					ASCIIBuffer.append(rgb[1]).append(";");
-					ASCIIBuffer.append(rgb[2]).append("m");
+				if (colorsEnabled) {
+					if (color.equals("reset")) {
+						out.append(reset);
+					} else {
+						if (colorProp != null) {
+							color = colorProp;
+							System.out.println("Color: " + color);
+						}
+						if (fg != null) {
+							out.append(fg);
+							Conversion.bufferRGBToASCII(
+									Conversion.hexToRGB(color),
+									out);
+						}
+						if (bg != null) {
+							out.append(bg);
+							Conversion.bufferRGBToASCII(
+									Conversion.hexToRGB(color),
+									out);
+						}
+					}
 				}
-				out.append(ASCIIBuffer.toString());
 				index = end;
 			} else if (token != '\\') {
 				out.append(token);
@@ -104,14 +124,14 @@ public class Console {
 			lastToken = token;
 		}
 
-		if (resetAtEnd) {
+		if (resetAtEnd && colorsEnabled) {
 			out.append(FULL_RESET);
 		}
 		return out.toString();
 	}
 
-	public static String substituteASCIIColors(String str) {
-		return substituteASCIIColors(str, true);
+	public static String parseConsoleColors(String str) {
+		return parseConsoleColors(str, true);
 	}
 
 	/**
@@ -122,7 +142,8 @@ public class Console {
 	 * @see #println(Object...)
 	 */
 	public static void println(Object... contents) {
-		System.out.println(parseConsoleColors(contents));
+		System.out.println(
+				parseConsoleColors(Formatter.objectArrayToString(contents)));
 	}
 
 	/**
