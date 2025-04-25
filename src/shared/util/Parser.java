@@ -11,6 +11,7 @@ public class Parser {
 		} else if (type == Double.class) {
 			return type.cast(Double.parseDouble(value));
 		} else if (type == Boolean.class) {
+			System.out.println("raw: " + value);
 			return type.cast(Boolean.parseBoolean(value));
 		}
 		return type.cast(value);

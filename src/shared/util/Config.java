@@ -20,6 +20,10 @@ public class Config {
 		return config.getProperty(prop);
 	}
 
+	public static <T> T get(String prop, Class<T> type) {
+		return Parser.parsePrimitive(get(prop), type);
+	}
+
 	public static void save() {
 		try (FileOutputStream out = new FileOutputStream("config.properties")) {
 			config.store(out, "Config properties");
