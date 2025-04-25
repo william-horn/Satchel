@@ -7,6 +7,7 @@ import gui.interfaces.WindowInitializer;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+@SuppressWarnings("unused")
 public class Window extends JFrame {
 
 	public Window(String windowName, int x, int y) {
@@ -15,14 +16,6 @@ public class Window extends JFrame {
 		this.setLayout(null);
 		this.setSize(x, y);
 		this.setLocationRelativeTo(null);
-
-		this.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				System.out.println("Resized");
-			}
-		});
-
 		this.setVisible(true);
 	}
 
