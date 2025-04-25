@@ -14,7 +14,6 @@ public class Console {
 	final private static String COLOR_TAG_PATTERN = "\\$([a-zA-Z]+)\\-?([a-zA-Z_]*)";
 	final private static String TEXT_RESET = "\u001B[39m";
 	final private static String BG_RESET = "\u001B[49m";
-	final private static String FULL_RESET = "\u001B[0";
 	final private static String TEXT_CODE = "\u001B[38;2;";
 	final private static String BG_CODE = "\u001B[48;2;";
 
@@ -45,8 +44,8 @@ public class Console {
 	}
 
 	// <text blue>hello world</text>
-	// <text #F8WHU9>sup world</text>
-	public static String substituteASCIIColors(String str, boolean resetAtEnd) {
+	// <text #F8WHU9>hello world</text>
+	private static String substituteASCIIColors(String str, boolean resetAtEnd) {
 		StringBuilder out = new StringBuilder();
 		char lastToken = '\0';
 
@@ -54,6 +53,7 @@ public class Console {
 		for (int index = 0; index < len; index++) {
 			char token = str.charAt(index);
 			if (token == '<' && lastToken != '\\') {
+				// build directive
 				int start = index + 1;
 				int end = start;
 				while (end < len && str.charAt(end) != ' ') {
@@ -62,15 +62,19 @@ public class Console {
 
 				StringBuilder ASCIIBuffer = new StringBuilder();
 				String directive = str.substring(start, end);
+				String reset;
 
 				if (directive.equals("text")) {
 					ASCIIBuffer.append(TEXT_CODE);
+					reset = TEXT_RESET;
 				} else if (directive.equals("bg")) {
 					ASCIIBuffer.append(BG_CODE);
+					reset = BG_RESET;
 				} else {
 					throw new ParsingException("Invalid directive to console colors");
 				}
 
+				// build color
 				start = end + 1;
 				end = start;
 				while (end < len && str.charAt(end) != '>') {
@@ -78,20 +82,26 @@ public class Console {
 				}
 
 				String color = str.substring(start, end);
+				String colorProp = Config.get("console.colors." + color);
 				if (color.equals("reset")) {
-					ASCIIBuffer.append();
+					ASCIIBuffer.append(reset);
 				} else {
+					if (colorProp != null) {
+						color = colorProp;
+					}
+
 					int[] rgb = Conversion.hexToRGB(color);
 
 					ASCIIBuffer.append(rgb[0]).append(";");
 					ASCIIBuffer.append(rgb[1]).append(";");
 					ASCIIBuffer.append(rgb[2]).append("m");
 				}
-
+				out.append(ASCIIBuffer.toString());
 				index = end;
-			} else {
+			} else if (token != '\\') {
 				out.append(token);
 			}
+			lastToken = token;
 		}
 
 		return out.toString();
@@ -123,8 +133,8 @@ public class Console {
 		System.out.print(parseConsoleColors(message));
 	}
 
-	public static String promptMessage(String message, String def) {
-		print("> $text-green " + message);
+	public static String promptString(String message, String def) {
+		print("> <text green>" + message);
 		String submission = input.nextLine();
 
 		// Handle default case

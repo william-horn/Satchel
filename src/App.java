@@ -14,7 +14,10 @@ public class App {
 		// Config.set("console.debugModeEnabled", "true");
 		// Config.set("console.consoleColorsEnabled", "true");
 		// Config.save();
-		// System.out.println(Config.get("console.debugModeEnabled") == true);
-		System.out.println("\"" + Console.substituteASCIIColors("<text #5B84FF>ok<bg #f73987>take it easy now") + "\"");
+		// System.out.println(Config.get("console.asd"));
+		System.out.println("\""
+				+ Console.parseConsoleColors(
+						"\\<text #5B84FF>ok\\<bg #f73987>take it easy now<text white><text reset><bg reset>")
+				+ "\"");
 	}
 }
