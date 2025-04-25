@@ -1,4 +1,4 @@
-package gui;
+package gui.widgets;
 
 import javax.swing.JFrame;
 import java.awt.event.ComponentAdapter;

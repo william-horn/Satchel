@@ -1,12 +1,13 @@
-import gui.Container;
-import gui.Window;
+import gui.widgets.Container;
+import gui.widgets.Window;
+import gui.widgets.WindowContainer;
 
 public class App {
 	public static void main(String[] args) {
 		Window test = new Window("Test");
-		Container frame = new Container();
+		WindowContainer main = new WindowContainer(test);
+		Container box = new Container(main);
 
-		test.add(frame);
-		System.out.println(frame.getWidth());
+		// System.out.println(frame.getWidth());
 	}
 }
