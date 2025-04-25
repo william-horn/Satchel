@@ -4,17 +4,15 @@ import gui.widgets.Window;
 import gui.widgets.WindowContainer;
 
 import shared.util.Config;
+import shared.util.Parser;
 
 @SuppressWarnings("unused")
 public class App {
 	public static void main(String[] args) {
-		// TodoList todo = new TodoList();
-
 		Config.load();
-		Config.set("a", "900");
-		// Config.set("b", "23");
-		// Config.set("c", "676");
-		Config.save();
-		// System.out.println(Config.get("a"));
+		// Config.set("console.debugModeEnabled", "true");
+		// Config.set("console.consoleColorsEnabled", "true");
+		// Config.save();
+		// System.out.println(Config.get("console.debugModeEnabled") == true);
 	}
 }

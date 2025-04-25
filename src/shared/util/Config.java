@@ -1,3 +1,7 @@
+/*
+ * @author: William J. Horn
+ * github: https://github.com/william-horn
+ */
 package shared.util;
 
 import java.io.IOException;
