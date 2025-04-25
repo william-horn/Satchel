@@ -9,6 +9,7 @@ import java.awt.Color;
 
 @SuppressWarnings("unused")
 public class Container extends JPanel {
+
 	public Container() {
 		this.setLayout(null);
 		this.setBackground(Color.RED);
