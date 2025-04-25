@@ -4,8 +4,6 @@
  */
 package math.vectors;
 
-import java.util.ArrayList;
-
 import math.util.MathUtils;
 import math.vectors.exceptions.VectorMismatchException;
 import shared.interfaces.GenericCallback;
