@@ -11,9 +11,9 @@ import shared.exceptions.ParsingException;
 public class Console {
 	final private static Scanner input = new Scanner(System.in);
 
-	final private static String COLOR_TAG_PATTERN = "\\$([a-zA-Z]+)\\-?([a-zA-Z_]*)";
 	final private static String TEXT_RESET = "\u001B[39m";
 	final private static String BG_RESET = "\u001B[49m";
+	final private static String FULL_RESET = "\u001B[0m";
 	final private static String TEXT_CODE = "\u001B[38;2;";
 	final private static String BG_CODE = "\u001B[48;2;";
 
@@ -47,8 +47,8 @@ public class Console {
 	// <text #F8WHU9>hello world</text>
 	private static String substituteASCIIColors(String str, boolean resetAtEnd) {
 		StringBuilder out = new StringBuilder();
+		StringBuilder ASCIIBuffer = new StringBuilder();
 		char lastToken = '\0';
-
 		int len = str.length();
 		for (int index = 0; index < len; index++) {
 			char token = str.charAt(index);
@@ -60,18 +60,21 @@ public class Console {
 					end++;
 				}
 
-				StringBuilder ASCIIBuffer = new StringBuilder();
+				String fg, bg, reset;
 				String directive = str.substring(start, end);
-				String reset;
-
-				if (directive.equals("text")) {
-					ASCIIBuffer.append(TEXT_CODE);
-					reset = TEXT_RESET;
-				} else if (directive.equals("bg")) {
-					ASCIIBuffer.append(BG_CODE);
-					reset = BG_RESET;
-				} else {
-					throw new ParsingException("Invalid directive to console colors");
+				switch (directive) {
+					case "text" -> {
+						fg = TEXT_CODE;
+						reset = TEXT_RESET;
+					}
+					case "bg" -> {
+						bg = BG_CODE;
+						reset = BG_RESET;
+					}
+					case "full" -> {
+						reset = FULL_RESET;
+					}
+					default -> throw new ParsingException("Invalid directive to console colors");
 				}
 
 				// build color
@@ -80,18 +83,15 @@ public class Console {
 				while (end < len && str.charAt(end) != '>') {
 					end++;
 				}
-
 				String color = str.substring(start, end);
 				String colorProp = Config.get("console.colors." + color);
 				if (color.equals("reset")) {
 					ASCIIBuffer.append(reset);
 				} else {
-					if (colorProp != null) {
+					if (colorProp != null)
 						color = colorProp;
-					}
 
 					int[] rgb = Conversion.hexToRGB(color);
-
 					ASCIIBuffer.append(rgb[0]).append(";");
 					ASCIIBuffer.append(rgb[1]).append(";");
 					ASCIIBuffer.append(rgb[2]).append("m");
@@ -104,6 +104,9 @@ public class Console {
 			lastToken = token;
 		}
 
+		if (resetAtEnd) {
+			out.append(FULL_RESET);
+		}
 		return out.toString();
 	}
 
