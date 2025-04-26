@@ -3,6 +3,8 @@
  */
 package satchel.math.vectors;
 
+import satchel.math.vectors.abstracts.BaseVector;
+
 /**
  * A class similar to Vector2, however it's components must be initialized as
  * int values and they will never change into a decimal form, even though they

@@ -1,18 +1,22 @@
 package satchel.gui.widgets;
 
 import java.awt.Color;
-
-import javax.swing.JFrame;
+import java.awt.Component;
 
 public class WindowContainer extends Container {
+	private Window parent;
+
 	public WindowContainer() {
 		super();
 		this.setBackground(Color.BLACK);
 	}
 
-	public WindowContainer(JFrame window) {
+	public WindowContainer(Window window) {
 		this();
-		this.setSize(window.getWidth(), window.getHeight());
-		window.add(this);
+	}
+
+	@Override
+	public Component add(Component comp) {
+		return null;
 	}
 }

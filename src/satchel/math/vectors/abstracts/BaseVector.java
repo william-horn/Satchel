@@ -2,7 +2,7 @@
  * @author: William J. Horn
  * github: https://github.com/william-horn
  */
-package satchel.math.vectors;
+package satchel.math.vectors.abstracts;
 
 import satchel.math.util.MathUtils;
 import satchel.math.vectors.exceptions.VectorMismatchException;

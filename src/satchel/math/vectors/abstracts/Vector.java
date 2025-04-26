@@ -1,7 +1,7 @@
 /*
  * @written 4/2/2025
  */
-package satchel.math.vectors;
+package satchel.math.vectors.abstracts;
 
 import satchel.math.util.MathUtils;
 

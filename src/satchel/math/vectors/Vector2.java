@@ -3,6 +3,8 @@
  */
 package satchel.math.vectors;
 
+import satchel.math.vectors.abstracts.Vector;
+
 /**
  * A custom implementation of the Vector class for dealing with math in 2D
  * space.
@@ -29,13 +31,21 @@ public class Vector2 extends Vector<Vector2> {
 		return this.get(1);
 	}
 
+	public void setX(double value) {
+		this.components[0] = value;
+	}
+
+	public void setY(double value) {
+		this.components[1] = value;
+	}
+
 	public double angle() {
 		return Math.atan2(this.getY(), this.getX());
 	}
 
-	public double screenAngle() {
-		return Math.atan2(-this.getY(), this.getX());
-	}
+	// public double screenAngle() {
+	// return Math.atan2(-this.getY(), this.getX());
+	// }
 
 	/**
 	 * Evaluate the general linear function of the line passing through this
