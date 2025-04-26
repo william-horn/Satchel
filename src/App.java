@@ -12,15 +12,16 @@ import shared.util.Parser;
 public class App {
 	public static void main(String[] args) {
 		Config.load();
-		// Config.set("console.debugModeEnabled", "true");
-		// Config.set("console.consoleColorsEnabled", "true");
-		// Config.save();
-		// System.out.println(Config.get("console.asd"));
-		// StringBuilder t = new StringBuilder();
-		// t.append("\u001B[38;2;255;165;0m");
-		// t.append("test");
-		// System.out.println(t.toString());
-		// Config.set("console.consoleColorsEnabled", "false");
-		Console.println("<full #3adb1a>hellow world<full reset>something");
+		// Console.promptString("Enter name: ", "will");
+		// Console.promptBoolean("Enter a boolean: ", false);
+		Config.set("console.consoleColorsEnabled", "false");
+
+		Console.setMenuChoices(
+				"One",
+				"Two",
+				"Three");
+
+		int selected = Console.promptMenu("My Menu", "Enter a choice: ", 1);
+
 	}
 }

@@ -4,6 +4,7 @@
  */
 package shared.util;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import shared.exceptions.ParsingException;
@@ -16,6 +17,8 @@ public class Console {
 	final private static String FULL_RESET = "\u001B[0m";
 	final private static String TEXT_CODE = "\u001B[38;2;";
 	final private static String BG_CODE = "\u001B[48;2;";
+
+	final private static ArrayList<String> menuChoices = new ArrayList<>();
 
 	private static int jumpToChar(String str, int startIndex, char ch) {
 		int len = str.length();
@@ -49,6 +52,7 @@ public class Console {
 	 *                   string ({@code true} means they reset, {@code false} means
 	 *                   they don't)
 	 * @return the parsed string with the ASCII code colors
+	 * @see #parseConsoleColors(String, boolean)
 	 */
 	public static String parseConsoleColors(String str, boolean resetAtEnd) {
 		StringBuilder out = new StringBuilder();
@@ -101,7 +105,6 @@ public class Console {
 					} else {
 						if (colorProp != null) {
 							color = colorProp;
-							System.out.println("Color: " + color);
 						}
 						if (fg != null) {
 							out.append(fg);
@@ -130,6 +133,18 @@ public class Console {
 		return out.toString();
 	}
 
+	/**
+	 * Overload of {@link #parseConsoleColors(String, boolean)} which sets the
+	 * second parameter of {@code resetAtEnd} to {@code true} by default.
+	 * 
+	 * @param str        the string to parse the color styling tags in
+	 * @param resetAtEnd whether or not the color styles reset at the end of the
+	 *                   string ({@code true} means they reset, {@code false} means
+	 *                   they don't)
+	 * @return the parsed string with the ASCII code colors
+	 * @see #parseConsoleColors(String, boolean)
+	 * @see #parseConsoleColors(String)
+	 */
 	public static String parseConsoleColors(String str) {
 		return parseConsoleColors(str, true);
 	}
@@ -157,16 +172,120 @@ public class Console {
 		System.out.print(parseConsoleColors(message));
 	}
 
+	/**
+	 * Prompt the user to enter some text field
+	 * 
+	 * @param message the message the user enters as a string
+	 * @param def     the default string to be returned if the user entered an empty
+	 *                string
+	 * @return the text value the user entered, or the default string
+	 */
 	public static String promptString(String message, String def) {
-		print("> <text green>" + message);
-		String submission = input.nextLine();
+		String submission = promptString(message);
 
-		// Handle default case
-		if (submission.equals("")) {
-			print("$text-purple default: $text-reset " + def + "\n\n");
+		// handle default case
+		if (submission.isEmpty()) {
+			printInputConfirmation("default: " + def);
 			return def;
 		}
-
 		return submission;
+	}
+
+	public static String promptString(String message) {
+		print("> <text #40FF2B>" + message);
+		return input.nextLine();
+	}
+
+	public static boolean promptBoolean(String message, boolean def) {
+		Boolean answer = null;
+		do {
+			String submission = promptString(message);
+			if (submission.equals("true")) {
+				answer = true;
+			} else if (submission.equals("false")) {
+				answer = false;
+			} else if (submission.isEmpty()) {
+				answer = def;
+				printInputConfirmation("default: " + def);
+			} else {
+				printError("Expected \"y\" or \"no\", got \"" + submission + "\"");
+			}
+		} while (answer == null);
+		return answer;
+	}
+
+	public static int promptInt(String message, int def) {
+		Integer answer = null;
+		do {
+			String submission = promptString(message);
+			if (submission.matches("-?\\d+")) {
+				answer = Integer.parseInt(submission);
+			} else if (submission.isEmpty()) {
+				answer = def;
+				printInputConfirmation("default: " + def);
+			} else {
+				printError("Expected parsable int value, got \"" + submission + "\"");
+			}
+		} while (answer == null);
+		return answer;
+	}
+
+	public static double promptDouble(String message, double def) {
+		Double answer = null;
+		do {
+			String submission = promptString(message);
+			if (submission.matches("[+-]?\\d*\\.?\\d+")) {
+				answer = Double.parseDouble(submission);
+			} else if (submission.isEmpty()) {
+				answer = def;
+				printInputConfirmation("default: " + def);
+			} else {
+				printError("Expected parsable double value, got \"" + submission + "\"");
+			}
+		} while (answer == null);
+		return answer;
+	}
+
+	public static int promptMenu(String menuTitle, String message, int def) {
+		if (menuChoices.size() == 0) {
+			throw new Error("Menu choices have not been set");
+		} else if (def < 0) {
+			throw new Error("Default choice cannot be less than 0");
+		} else if (def > menuChoices.size()) {
+			throw new Error("Default choice cannot exceed choice list");
+		}
+
+		println(menuTitle);
+
+		Integer choice = null;
+		do {
+			int submission = promptInt(message, def);
+			if (submission < 0) {
+				printError("Menu choice cannot be less than 0");
+			} else if (submission > menuChoices.size()) {
+				printError("Menu choice cannot exceed choice list");
+			} else {
+				choice = submission;
+			}
+		} while (choice == null);
+		return choice;
+	}
+
+	public static void setMenuChoices(String... choices) {
+		menuChoices.clear();
+		for (int index = 0; index < choices.length; index++) {
+			menuChoices.add(choices[index]);
+		}
+	}
+
+	/*
+	 * Private utilities
+	 */
+	private static void printError(String message) {
+		println("> <text red>Input error: " + message);
+	}
+
+	private static void printInputConfirmation(String message) {
+		println("<text #18a1e1>" + message);
 	}
 }
