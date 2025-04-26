@@ -145,14 +145,14 @@ public class ValueMeter {
 
 	@Override
 	public String toString() {
-		return new StringBuilder("ValueMeter<")
+		return new StringBuilder("ValueMeter{")
 				.append("MaxValue=")
 				.append(this.max)
 				.append(", MinValue=")
 				.append(this.min)
 				.append(", Value=")
 				.append(this.value)
-				.append(">")
+				.append("}")
 				.toString();
 	}
 }

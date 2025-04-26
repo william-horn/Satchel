@@ -251,6 +251,6 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 
 	@Override
 	public String toString() {
-		return "";
+		return "BaseVector{T}";
 	}
 }

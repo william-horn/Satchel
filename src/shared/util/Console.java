@@ -55,12 +55,17 @@ public class Console {
 	 * @see #parseConsoleColors(String, boolean)
 	 */
 	public static String parseConsoleColors(String str, boolean resetAtEnd) {
-		StringBuilder out = new StringBuilder();
-		char lastToken = '\0';
-		int len = str.length();
 		boolean colorsEnabled = Config.get(
 				"console.consoleColorsEnabled",
 				Boolean.class);
+
+		if (!colorsEnabled) {
+			return str.replaceAll("\\\\?<.+?>", "");
+		}
+
+		StringBuilder out = new StringBuilder();
+		char lastToken = '\0';
+		int len = str.length();
 
 		for (int index = 0; index < len; index++) {
 			char token = str.charAt(index);
@@ -99,25 +104,23 @@ public class Console {
 				String color = str.substring(start, end);
 				String colorProp = Config.get("console.colors." + color);
 
-				if (colorsEnabled) {
-					if (color.equals("reset")) {
-						out.append(reset);
-					} else {
-						if (colorProp != null) {
-							color = colorProp;
-						}
-						if (fg != null) {
-							out.append(fg);
-							Conversion.bufferRGBToASCII(
-									Conversion.hexToRGB(color),
-									out);
-						}
-						if (bg != null) {
-							out.append(bg);
-							Conversion.bufferRGBToASCII(
-									Conversion.hexToRGB(color),
-									out);
-						}
+				if (color.equals("reset")) {
+					out.append(reset);
+				} else {
+					if (colorProp != null) {
+						color = colorProp;
+					}
+					if (fg != null) {
+						out.append(fg);
+						Conversion.bufferRGBToASCII(
+								Conversion.hexToRGB(color),
+								out);
+					}
+					if (bg != null) {
+						out.append(bg);
+						Conversion.bufferRGBToASCII(
+								Conversion.hexToRGB(color),
+								out);
 					}
 				}
 				index = end;
@@ -127,7 +130,7 @@ public class Console {
 			lastToken = token;
 		}
 
-		if (resetAtEnd && colorsEnabled) {
+		if (resetAtEnd) {
 			out.append(FULL_RESET);
 		}
 		return out.toString();
@@ -185,17 +188,31 @@ public class Console {
 
 		// handle default case
 		if (submission.isEmpty()) {
-			printInputConfirmation("default: " + def);
+			printConfirmation("default: " + def);
 			return def;
 		}
 		return submission;
 	}
 
+	/**
+	 * A generic prompt that collects a string input from the user.
+	 * 
+	 * @param message the message to prompt the user with
+	 * @return the string value the user entered
+	 */
 	public static String promptString(String message) {
 		print("> <text #40FF2B>" + message);
 		return input.nextLine();
 	}
 
+	/**
+	 * A generic prompt that collects a string input from the user to be parsed as a
+	 * boolean
+	 * 
+	 * @param message the string input from the user
+	 * @param def     the default boolean value
+	 * @return the parsed boolean from the user or the default
+	 */
 	public static boolean promptBoolean(String message, boolean def) {
 		Boolean answer = null;
 		do {
@@ -206,7 +223,7 @@ public class Console {
 				answer = false;
 			} else if (submission.isEmpty()) {
 				answer = def;
-				printInputConfirmation("default: " + def);
+				printConfirmation("default: " + def);
 			} else {
 				printError("Expected \"y\" or \"no\", got \"" + submission + "\"");
 			}
@@ -222,7 +239,7 @@ public class Console {
 				answer = Integer.parseInt(submission);
 			} else if (submission.isEmpty()) {
 				answer = def;
-				printInputConfirmation("default: " + def);
+				printConfirmation("default: " + def);
 			} else {
 				printError("Expected parsable int value, got \"" + submission + "\"");
 			}
@@ -238,7 +255,7 @@ public class Console {
 				answer = Double.parseDouble(submission);
 			} else if (submission.isEmpty()) {
 				answer = def;
-				printInputConfirmation("default: " + def);
+				printConfirmation("default: " + def);
 			} else {
 				printError("Expected parsable double value, got \"" + submission + "\"");
 			}
@@ -255,7 +272,17 @@ public class Console {
 			throw new Error("Default choice cannot exceed choice list");
 		}
 
-		println(menuTitle);
+		// menu headers
+		println("-".repeat(menuTitle.length() + 4));
+		println("|<text bright_green> " + menuTitle + "<text reset> |");
+		println("-".repeat(menuTitle.length() + 4));
+
+		// display choices
+		println("");
+		for (int index = 0; index < menuChoices.size(); index++) {
+			println((index + 1) + ") " + menuChoices.get(index));
+		}
+		println("");
 
 		Integer choice = null;
 		do {
@@ -266,6 +293,7 @@ public class Console {
 				printError("Menu choice cannot exceed choice list");
 			} else {
 				choice = submission;
+				printConfirmation("Selected: " + menuChoices.get(def - 1));
 			}
 		} while (choice == null);
 		return choice;
@@ -278,14 +306,33 @@ public class Console {
 		}
 	}
 
-	/*
-	 * Private utilities
+	/**
+	 * Prints an ASCII line to the console of a specified length
+	 *
+	 * @param repeat
+	 * @see #br()
+	 * @see #br(int)
 	 */
-	private static void printError(String message) {
+	public static void br(int repeat) {
+		println("-".repeat(repeat));
+	}
+
+	/**
+	 * Override: {@code br}
+	 *
+	 * Calls the root method but passes a default length value of {@code 50}
+	 * 
+	 * @see #br()
+	 */
+	public static void br() {
+		br(50);
+	}
+
+	public static void printError(String message) {
 		println("> <text red>Input error: " + message);
 	}
 
-	private static void printInputConfirmation(String message) {
+	public static void printConfirmation(String message) {
 		println("<text #18a1e1>" + message);
 	}
 }
