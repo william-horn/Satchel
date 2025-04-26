@@ -20,7 +20,5 @@ public class App {
 				"One",
 				"Two",
 				"Three");
-
-		int selection = Console.promptMenu("My Menu", "Enter choice: ", 2);
 	}
 }

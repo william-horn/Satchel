@@ -182,6 +182,7 @@ public class Console {
 	 * @param def     the default string to be returned if the user entered an empty
 	 *                string
 	 * @return the text value the user entered, or the default string
+	 * @see #promptString(String, String)
 	 */
 	public static String promptString(String message, String def) {
 		String submission = promptString(message);
@@ -199,6 +200,7 @@ public class Console {
 	 * 
 	 * @param message the message to prompt the user with
 	 * @return the string value the user entered
+	 * @see #promptString(String)
 	 */
 	public static String promptString(String message) {
 		print("> <text #40FF2B>" + message);
@@ -212,14 +214,15 @@ public class Console {
 	 * @param message the string input from the user
 	 * @param def     the default boolean value
 	 * @return the parsed boolean from the user or the default
+	 * @see #promptBoolean(String, boolean)
 	 */
 	public static boolean promptBoolean(String message, boolean def) {
 		Boolean answer = null;
 		do {
 			String submission = promptString(message);
-			if (submission.equals("true")) {
+			if (submission.equals("y")) {
 				answer = true;
-			} else if (submission.equals("false")) {
+			} else if (submission.equals("n")) {
 				answer = false;
 			} else if (submission.isEmpty()) {
 				answer = def;
@@ -231,6 +234,15 @@ public class Console {
 		return answer;
 	}
 
+	/**
+	 * A generic prompt that collects a string input from the user to be parsed as
+	 * an integer.
+	 * 
+	 * @param message the string input from the user
+	 * @param def     the default int value
+	 * @return the parsed int from the user or the default
+	 * @see #promptInt(String, int)
+	 */
 	public static int promptInt(String message, int def) {
 		Integer answer = null;
 		do {
@@ -247,6 +259,15 @@ public class Console {
 		return answer;
 	}
 
+	/**
+	 * A generic prompt that collects a string input from the user to be parsed as
+	 * an double.
+	 * 
+	 * @param message the string input from the user
+	 * @param def     the default double value
+	 * @return the parsed double from the user or the default
+	 * @see #promptDouble(String, double)
+	 */
 	public static double promptDouble(String message, double def) {
 		Double answer = null;
 		do {
@@ -263,6 +284,36 @@ public class Console {
 		return answer;
 	}
 
+	/**
+	 * Prompt the user with a menu in the terminal. Menu interface includes a menu
+	 * header, which can be altered by providing a {@code menuTitle} as the first
+	 * argument.
+	 * 
+	 * <p>
+	 * <b>NOTE:</b>
+	 * You MUST call {@code Console.setMenuChoices()} before prompting the user with
+	 * a menu interface in order to display the menu items. This method sets up the
+	 * menu choices.
+	 * 
+	 * <pre>
+	 * <code>
+	 * Console.setMenuChoices(
+	 * 	"Choice 1",
+	 * 	"Choice 2",
+	 * 	"Choice 3",
+	 * 	...
+	 * );
+	 * 
+	 * int choice = Console.promptMenu("My Menu", "Enter: ", 1);
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param menuTitle the title of the menu displayed above the menu choices
+	 * @param message   the prompt for the user to enter a menu item
+	 * @param def       the default selection prompt (starting from choice 1)
+	 * @return the menu item choice the user selected parsed as an int
+	 * @see #promptMenu(String, String, int)
+	 */
 	public static int promptMenu(String menuTitle, String message, int def) {
 		if (menuChoices.size() == 0) {
 			throw new Error("Menu choices have not been set");
@@ -299,6 +350,13 @@ public class Console {
 		return choice;
 	}
 
+	/**
+	 * Set the menu choices that are displayed when the next call to
+	 * {@link #promptMenu(String, String, int)} happens.
+	 * 
+	 * @param choices a list of string args that will be interpreted as menu items
+	 *                in declared order.
+	 */
 	public static void setMenuChoices(String... choices) {
 		menuChoices.clear();
 		for (int index = 0; index < choices.length; index++) {
