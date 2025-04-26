@@ -1,13 +1,13 @@
-import gui.apps.TodoList;
-import gui.widgets.Container;
-import gui.widgets.Window;
-import gui.widgets.WindowContainer;
-import math.vectors.Vector2;
-import shared.util.Config;
-import shared.util.Console;
-import shared.util.Conversion;
-import shared.util.Parser;
-import shared.util.ValueMeter;
+import satchel.gui.apps.TodoList;
+import satchel.gui.widgets.Container;
+import satchel.gui.widgets.Window;
+import satchel.gui.widgets.WindowContainer;
+import satchel.math.vectors.Vector2;
+import satchel.shared.util.Config;
+import satchel.shared.util.Console;
+import satchel.shared.util.Conversion;
+import satchel.shared.util.Parser;
+import satchel.shared.util.ValueMeter;
 
 @SuppressWarnings("unused")
 public class App {
@@ -20,5 +20,7 @@ public class App {
 				"One",
 				"Two",
 				"Three");
+
+		Console.promptBoolean("Enter: ", false);
 	}
 }
