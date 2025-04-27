@@ -6,6 +6,7 @@ package satchel.gui.widgets;
 
 import javax.swing.JFrame;
 
+import satchel.gui.abstracts.SuperWidget;
 import satchel.gui.interfaces.WidgetListener;
 import satchel.gui.interfaces.WindowInitializer;
 import satchel.shared.interfaces.VoidGenericCallback;
@@ -19,42 +20,21 @@ import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 
 @SuppressWarnings("unused")
-public class Window extends Widget<JFrame> {
-
+public class Window extends SuperWidget<JFrame> {
 	public Window(String windowName, int x, int y) {
 		super(new JFrame());
-		JFrame ref = new JFrame();
+		JFrame ref = this.getRef();
 		ref.setTitle(windowName);
 		ref.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ref.setLayout(null);
 		ref.setSize(x, y);
 		ref.setLocationRelativeTo(null);
 		ref.setVisible(true);
-
-		ref.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				onResize.fire(e);
-			}
-		});
-
-		this.ref = ref;
 	}
 
-	public Window(String windowName) {
-		this(windowName, 400, 400);
-	}
-
-	public Window(int x, int y) {
-		this("Untitled", x, y);
-	}
-
-	public Window() {
-		this("Untitled");
-	}
-
-	public void add(Widget widget) {
-		this.children.add(widget);
-		this.ref.add(widget.getRef());
+	@Override
+	public void add(Widget<?> widget) {
+		super.add(widget);
+		this.getRef().add(widget.getRef());
 	}
 }

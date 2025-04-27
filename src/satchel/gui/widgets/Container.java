@@ -20,8 +20,4 @@ public class Container extends Widget<JPanel> {
 	public Container() {
 		super(new JPanel());
 	}
-
-	public Container(Widget<?> parent) {
-		super(new JPanel(), parent);
-	}
 }
