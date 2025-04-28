@@ -33,12 +33,10 @@ public class Window extends SuperWidget<JFrame> {
 	public Window() {
 		super(new JFrame());
 		JFrame ref = this.getRef();
-		ref.setTitle("Unnamed");
 		ref.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ref.setLayout(null);
 
-		// call computeSize() before setLocationRelativeToNull
-		// this.computeSize();
+		// call setTransformSize() before setLocationRelativeToNull
 		this.setTransformSize(1, 0, 1, 0);
 		ref.setLocationRelativeTo(null);
 		ref.setVisible(true);
@@ -64,5 +62,10 @@ public class Window extends SuperWidget<JFrame> {
 	@Override
 	public Unit2 computeMinSize() {
 		return this.getMinSize().toComputedComponents(screenSize);
+	}
+
+	@Override
+	public Unit2 computePosition() {
+		return this.getPosition().toComputedComponents(screenSize);
 	}
 }

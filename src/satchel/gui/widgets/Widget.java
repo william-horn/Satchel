@@ -61,4 +61,10 @@ public class Widget<T extends JComponent> extends SuperWidget<T> {
 		Unit2 parentSize = this.parent.getComputedSize();
 		return this.getMinSize().toComputedComponents(parentSize);
 	}
+
+	@Override
+	public Unit2 computePosition() {
+		Unit2 parentSize = this.parent.getComputedSize();
+		return this.getPosition().toComputedComponents(parentSize);
+	}
 }

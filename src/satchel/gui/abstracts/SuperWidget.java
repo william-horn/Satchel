@@ -18,15 +18,18 @@ public abstract class SuperWidget<T extends Component> {
 
 	final private UDim2 maxSize = new UDim2(Double.POSITIVE_INFINITY);
 	final private UDim2 minSize = new UDim2(Double.NEGATIVE_INFINITY);
+	final private UDim2 transformSize = new UDim2(0);
 	final private Unit2 computedMaxSize = new Unit2(Integer.MAX_VALUE);
 	final private Unit2 computedMinSize = new Unit2(Integer.MIN_VALUE);
-	final private UDim2 transformSize = new UDim2(1, 0, 1, 0);
 	final private Unit2 computedSize = new Unit2(0);
+
+	final private UDim2 position = new UDim2(0);
+	final private Unit2 computedPosition = new Unit2(0);
+
+	final private ArrayList<Widget<?>> children = new ArrayList<>();
 
 	private SizeMode sizeMode = SizeMode.TRANSFORM;
 	private SatchelLayout satchelLayout = SatchelLayout.NONE;
-
-	final private ArrayList<Widget<?>> children = new ArrayList<>();
 
 	public SuperWidget(T ref) {
 		this.ref = ref;
@@ -42,6 +45,14 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	// getters
+	public UDim2 getPosition() {
+		return this.position;
+	}
+
+	public Unit2 getComputedPosition() {
+		return this.computedPosition;
+	}
+
 	public UDim2 getTransformSize() {
 		return this.transformSize;
 	}
@@ -96,6 +107,14 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	// setters
+	public void setPosition(double scaleX, int offsetX, double scaleY, int offsetY) {
+		this.position.setScaleX(scaleX);
+		this.position.setOffsetX(offsetX);
+		this.position.setScaleY(scaleY);
+		this.position.setOffsetY(offsetY);
+		this.updateComputedPosition();
+	}
+
 	/**
 	 * Set the transform size of this {@code SuperWidget} using {@code UDim2}
 	 * components (scaleX, offsetX, scaleY, offsetX).
@@ -239,6 +258,16 @@ public abstract class SuperWidget<T extends Component> {
 		this.children.add(widget);
 	}
 
+	public void updateComputedPosition() {
+		Unit2 newComputedPosition = this.computePosition();
+		this.computedPosition.setX(newComputedPosition.getX());
+		this.computedPosition.setY(newComputedPosition.getY());
+
+		this.ref.setLocation(
+				this.computedPosition.getX(),
+				this.computedPosition.getY());
+	}
+
 	/**
 	 * Compute what the new {@code minSize} of this {@code SuperWidget}
 	 * <b>should</b> be and then update the internal {@code computedMinSize} field
@@ -327,6 +356,8 @@ public abstract class SuperWidget<T extends Component> {
 
 		return computedSize;
 	}
+
+	public abstract Unit2 computePosition();
 
 	/**
 	 * A custom implementation of what this widget's size <b>should</b> be when

@@ -22,6 +22,7 @@ public class App {
 		Container content = new Container(win);
 		content.setTransformSize(0.8, 500, 0.5, 0);
 		content.setMaxSize(0.5, 0, 1, 0);
+		content.setPosition(0, 0, 0, 0);
 		// Console.println(mainFrame.getAbsoluteSize());
 
 	}
