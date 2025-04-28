@@ -6,7 +6,7 @@ An opinionated Java framework by [William J. Horn](https://github.com/william-ho
 
 * A custom GUI framework built on `javax.swing` for interacting with, manipulating, and creating GUI widgets and components with intuitive flexability.
 
-* A `Console` class which includes powerful user input options, dynamic text and background color rendering, debug tools, and benchmark utilities right out the box.
+* A `Console` class which includes powerful user input options, dynamic text and background color rendering, debug tools, and benchmarking utilities right out of the box.
 
 * A shared `util` package containing many useful utility classes, both static and inheritable, for supporting large project needs.
 
@@ -18,7 +18,7 @@ An opinionated Java framework by [William J. Horn](https://github.com/william-ho
 
 ## GUI Capabilities
 
-Satchel's most powerful feature will most likely be the API for creating `swing` components and applications. No built-in layout managers are used in this framework, so all responsive behavior, positioning, sizing, drawing, animating, etc, is made from scratch.
+Satchel's most powerful feature will most likely be the API for creating `swing` components and applications. No built-in layout managers are used in this framework, so all responsive behavior, positioning, sizing, drawing, animating, etc, is calculated by Satchel.
 
 #### Widgets
 
