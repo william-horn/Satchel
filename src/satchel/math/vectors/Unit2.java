@@ -33,6 +33,14 @@ public class Unit2 extends BaseVector<Unit2> {
 		return this.getInt(1);
 	}
 
+	public void setX(int value) {
+		this.components[0] = value;
+	}
+
+	public void setY(int value) {
+		this.components[1] = value;
+	}
+
 	public Vector2 toVector2() {
 		return new Vector2(this.getX(), this.getY());
 	}

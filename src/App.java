@@ -4,7 +4,6 @@ import satchel.gui.apps.TodoList;
 import satchel.gui.widgets.Container;
 import satchel.gui.widgets.Widget;
 import satchel.gui.widgets.Window;
-import satchel.gui.widgets.WindowContainer;
 import satchel.math.vectors.Vector2;
 import satchel.shared.util.Config;
 import satchel.shared.util.Console;
@@ -18,10 +17,10 @@ public class App {
 		Config.load();
 		// new TodoList();
 		// Console.println(Math.atan2(-0.5, 1));
-		Window win = new Window();
-		WindowContainer mainFrame = new WindowContainer(win);
-		Container content = new Container(mainFrame);
-		Console.println(mainFrame.getAbsoluteSize());
+		// Window win = new Window();
+		// WindowContainer mainFrame = new WindowContainer(win);
+		// Container content = new Container(mainFrame);
+		// Console.println(mainFrame.getAbsoluteSize());
 
 	}
 }

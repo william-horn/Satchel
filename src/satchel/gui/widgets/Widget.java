@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import satchel.gui.abstracts.SuperWidget;
+import satchel.math.vectors.UDim2;
+import satchel.math.vectors.Unit2;
 import satchel.math.vectors.Vector2;
 import satchel.shared.util.EventSignal;
 
@@ -31,7 +33,11 @@ public class Widget<T extends JComponent> extends SuperWidget<T> {
 	}
 
 	@Override
-	public void setSize(double scaleX, int offsetX, double scaleY, int offsetY) {
-		super.setSize(scaleX, offsetX, scaleY, offsetY);
+	public Unit2 computeNoLayoutSize() {
+		UDim2 preferredSize = this.getPreferredSize();
+		Unit2 parentSize = this.parent.getComputedSize();
+		return new Unit2(
+				(int) (parentSize.getX() * preferredSize.getScaleX() + preferredSize.getOffsetX()),
+				(int) (parentSize.getY() * preferredSize.getScaleY() + preferredSize.getOffsetY()));
 	}
 }
