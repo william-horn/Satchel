@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 import satchel.gui.widgets.Widget;
 import satchel.math.vectors.Vector2;
 import satchel.shared.util.Console;
+import satchel.shared.util.EventSignal;
 import satchel.math.util.MathUtils;
 import satchel.math.vectors.UDim2;
 import satchel.math.vectors.Unit2;
@@ -23,10 +24,12 @@ public abstract class SuperWidget<T extends Component> {
 	final private Unit2 computedMinSize = new Unit2(Integer.MIN_VALUE);
 	final private Unit2 computedSize = new Unit2(0);
 
-	final private UDim2 position = new UDim2(0);
+	final private UDim2 transformPosition = new UDim2(0);
 	final private Unit2 computedPosition = new Unit2(0);
 
 	final private ArrayList<Widget<?>> children = new ArrayList<>();
+
+	final public EventSignal onResize = new EventSignal();
 
 	private SizeMode sizeMode = SizeMode.TRANSFORM;
 	private SatchelLayout satchelLayout = SatchelLayout.NONE;
@@ -45,8 +48,8 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	// getters
-	public UDim2 getPosition() {
-		return this.position;
+	public UDim2 getTransformPosition() {
+		return this.transformPosition;
 	}
 
 	public Unit2 getComputedPosition() {
@@ -107,12 +110,11 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	// setters
-	public void setPosition(double scaleX, int offsetX, double scaleY, int offsetY) {
-		this.position.setScaleX(scaleX);
-		this.position.setOffsetX(offsetX);
-		this.position.setScaleY(scaleY);
-		this.position.setOffsetY(offsetY);
-		this.updateComputedPosition();
+	public void setVirtualTransformPosition(double scaleX, int offsetX, double scaleY, int offsetY) {
+		this.transformPosition.setScaleX(scaleX);
+		this.transformPosition.setOffsetX(offsetX);
+		this.transformPosition.setScaleY(scaleY);
+		this.transformPosition.setOffsetY(offsetY);
 	}
 
 	/**
@@ -128,12 +130,15 @@ public abstract class SuperWidget<T extends Component> {
 	 *                based on the implementation of {@code computeMinSize}
 	 * @param offsetY vertical offset in pixels
 	 */
-	public void setTransformSize(double scaleX, int offsetX, double scaleY, int offsetY) {
+	public void setVirtualTransformSize(double scaleX, int offsetX, double scaleY, int offsetY) {
 		this.transformSize.setScaleX(scaleX);
 		this.transformSize.setOffsetX(offsetX);
 		this.transformSize.setScaleY(scaleY);
 		this.transformSize.setOffsetY(offsetY);
-		this.updateComputedSize();
+	}
+
+	public void setTransformSize(double scaleX, int offsetX, double scaleY, int offsetY) {
+		this.setVirtualTransformSize(scaleX, offsetX, scaleY, offsetY);
 	}
 
 	/**
@@ -259,7 +264,7 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	public void updateComputedPosition() {
-		Unit2 newComputedPosition = this.computePosition();
+		Unit2 newComputedPosition = this.computeTransformPosition();
 		this.computedPosition.setX(newComputedPosition.getX());
 		this.computedPosition.setY(newComputedPosition.getY());
 
@@ -275,7 +280,7 @@ public abstract class SuperWidget<T extends Component> {
 	 * {@code minSize} should be is up to the manual implementation of
 	 * {@link #computedMinSize} in each subclass.
 	 */
-	private void updateMinSize() {
+	public void updateMinSize() {
 		Unit2 newComputedMinSize = this.computeMinSize();
 		this.computedMinSize.setX(newComputedMinSize.getX());
 		this.computedMinSize.setY(newComputedMinSize.getY());
@@ -289,7 +294,7 @@ public abstract class SuperWidget<T extends Component> {
 	 * {@code minSize} should be is up to the manual implementation of
 	 * {@link #computedMinSize} in each subclass.
 	 */
-	private void updateMaxSize() {
+	public void updateMaxSize() {
 		Unit2 newComputedMaxSize = this.computeMaxSize();
 		this.computedMaxSize.setX(newComputedMaxSize.getX());
 		this.computedMaxSize.setY(newComputedMaxSize.getY());
@@ -301,7 +306,7 @@ public abstract class SuperWidget<T extends Component> {
 	 * be and then update the internal {@code computedSize} field along with
 	 * rendering the widget's new size.
 	 */
-	private void updateComputedSize() {
+	public void updateComputedSize() {
 		Unit2 newComputedSize = this.computeSize();
 		this.computedSize.setX(newComputedSize.getX());
 		this.computedSize.setY(newComputedSize.getY());
@@ -357,7 +362,7 @@ public abstract class SuperWidget<T extends Component> {
 		return computedSize;
 	}
 
-	public abstract Unit2 computePosition();
+	public abstract Unit2 computeTransformPosition();
 
 	/**
 	 * A custom implementation of what this widget's size <b>should</b> be when

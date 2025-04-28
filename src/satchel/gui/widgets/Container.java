@@ -24,6 +24,7 @@ public class Container extends Widget<JPanel> {
 		super(new JPanel());
 		JPanel ref = this.getRef();
 		ref.setBackground(Color.RED);
+		ref.setDoubleBuffered(true);
 	}
 
 	public Container(SuperWidget<?> parent) {
@@ -38,5 +39,10 @@ public class Container extends Widget<JPanel> {
 			throw new Error("Cannot compute size of widget with no parent");
 		}
 		return super.computeTransformSize();
+	}
+
+	@Override
+	public String toString() {
+		return "Widget{Container}";
 	}
 }

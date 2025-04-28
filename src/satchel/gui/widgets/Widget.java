@@ -1,6 +1,8 @@
 package satchel.gui.widgets;
 
 import java.awt.Color;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -53,6 +55,7 @@ public class Widget<T extends JComponent> extends SuperWidget<T> {
 	@Override
 	public Unit2 computeMaxSize() {
 		Unit2 parentSize = this.parent.getComputedSize();
+		Console.println("Parent size: ", parentSize);
 		return this.getMaxSize().toComputedComponents(parentSize);
 	}
 
@@ -63,8 +66,13 @@ public class Widget<T extends JComponent> extends SuperWidget<T> {
 	}
 
 	@Override
-	public Unit2 computePosition() {
+	public Unit2 computeTransformPosition() {
 		Unit2 parentSize = this.parent.getComputedSize();
-		return this.getPosition().toComputedComponents(parentSize);
+		return this.getTransformPosition().toComputedComponents(parentSize);
+	}
+
+	@Override
+	public String toString() {
+		return "SuperWidget{Widget{?}}";
 	}
 }

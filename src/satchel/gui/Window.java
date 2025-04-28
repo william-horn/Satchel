@@ -13,6 +13,7 @@ import satchel.gui.widgets.Widget;
 import satchel.math.vectors.UDim2;
 import satchel.math.vectors.Unit2;
 import satchel.shared.interfaces.VoidGenericCallback;
+import satchel.shared.util.Console;
 import satchel.shared.util.EventSignal;
 
 import java.awt.event.ComponentAdapter;
@@ -40,6 +41,24 @@ public class Window extends SuperWidget<JFrame> {
 		this.setTransformSize(1, 0, 1, 0);
 		ref.setLocationRelativeTo(null);
 		ref.setVisible(true);
+
+		Window window = this;
+		ref.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				window.onResize.fire(e);
+			}
+		});
+
+		this.onResize.connect(e -> {
+			UDim2 transformSize = this.getTransformSize();
+			Unit2 computedTransformSize = transformSize.toComputedComponents(screenSize);
+			this.setVirtualTransformSize(
+					transformSize.getScaleX(),
+					(int) (ref.getWidth() - computedTransformSize.getX()),
+					transformSize.getScaleY(),
+					(int) (ref.getHeight() - computedTransformSize.getY()));
+		});
 	}
 
 	@Override
@@ -65,7 +84,12 @@ public class Window extends SuperWidget<JFrame> {
 	}
 
 	@Override
-	public Unit2 computePosition() {
-		return this.getPosition().toComputedComponents(screenSize);
+	public Unit2 computeTransformPosition() {
+		return this.getTransformPosition().toComputedComponents(screenSize);
+	}
+
+	@Override
+	public String toString() {
+		return "SuperWidget{Window}";
 	}
 }
