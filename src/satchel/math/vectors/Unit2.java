@@ -17,8 +17,7 @@ public class Unit2 extends BaseVector<Unit2> {
 	}
 
 	public Unit2(int x, int y) {
-		this.components[0] = (double) x;
-		this.components[1] = (double) y;
+		this.components = new double[] { x, y };
 	}
 
 	// TODO: Add documentation

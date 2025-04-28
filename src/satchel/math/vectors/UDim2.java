@@ -5,10 +5,7 @@ package satchel.math.vectors;
 
 import satchel.math.vectors.abstracts.Vector;
 
-/**
- * A custom implementation of the Vector class for dealing with math in 2D
- * space.
- */
+// TODO: Add documentation
 public class UDim2 extends Vector<UDim2> {
 
 	public UDim2() {
@@ -24,9 +21,7 @@ public class UDim2 extends Vector<UDim2> {
 	}
 
 	// TODO: Add documentation
-	//
-	// Public getters
-	//
+	// getters
 	public double getScaleX() {
 		return this.get(0);
 	}
@@ -43,19 +38,20 @@ public class UDim2 extends Vector<UDim2> {
 		return this.get(3);
 	}
 
-	public void setX(double value) {
+	// setters
+	public void setScaleX(double value) {
 		this.components[0] = value;
 	}
 
-	public void setY(double value) {
+	public void setOffsetX(double value) {
 		this.components[1] = value;
 	}
 
-	public void setZ(double value) {
+	public void setScaleY(double value) {
 		this.components[2] = value;
 	}
 
-	public void setW(double value) {
+	public void setOffsetY(double value) {
 		this.components[3] = value;
 	}
 
@@ -70,6 +66,16 @@ public class UDim2 extends Vector<UDim2> {
 
 	@Override
 	public String toString() {
-		return "UDim2";
+		return new StringBuilder(this.getClass().getSimpleName())
+				.append("{")
+				.append(this.getScaleX())
+				.append(", ")
+				.append(this.getOffsetX())
+				.append(", ")
+				.append(this.getScaleY())
+				.append(", ")
+				.append(this.getOffsetY())
+				.append("}")
+				.toString();
 	}
 }

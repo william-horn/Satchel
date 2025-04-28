@@ -33,13 +33,9 @@ public class Window extends SuperWidget<JFrame> {
 		ref.setTitle("Unnamed");
 		ref.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ref.setLayout(null);
+		this.computeSize();
 		ref.setLocationRelativeTo(null);
 		ref.setVisible(true);
-
-		this.computeSize();
-		ref.setSize(
-				(int) this.getComputedSize().getX(),
-				(int) this.getComputedSize().getY());
 	}
 
 	@Override

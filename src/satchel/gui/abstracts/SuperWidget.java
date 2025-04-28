@@ -7,6 +7,7 @@ import javax.swing.JComponent;
 
 import satchel.gui.widgets.Widget;
 import satchel.math.vectors.Vector2;
+import satchel.shared.util.Console;
 import satchel.math.vectors.UDim2;
 import satchel.math.vectors.Unit2;
 
@@ -72,24 +73,28 @@ public abstract class SuperWidget<T extends Component> {
 
 	// setters
 	public void setSize(double scaleX, int offsetX, double scaleY, int offsetY) {
-		this.preferredSize.setX(scaleX);
-		this.preferredSize.setY(scaleY);
-		this.preferredSize.setX(offsetX);
-		this.preferredSize.setY(offsetY);
+		this.preferredSize.setScaleX(scaleX);
+		this.preferredSize.setOffsetX(offsetX);
+		this.preferredSize.setScaleY(scaleY);
+		this.preferredSize.setOffsetY(offsetY);
 		this.computeSize();
 	}
 
 	public void setSizeMode(SizeMode sizeMode) {
+		if (this.sizeMode == sizeMode)
+			return;
 		this.sizeMode = sizeMode;
 		this.computeSize();
 	}
 
 	public void setMaxSize(UDim2 maxSize) {
 		this.maxSize = maxSize;
+		this.computeSize();
 	}
 
 	public void setMinSize(UDim2 minSize) {
 		this.minSize = minSize;
+		this.computeSize();
 	}
 
 	public void setSatchelLayout(SatchelLayout satchelLayout) {
@@ -101,6 +106,7 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	public void computeSize() {
+		// compute virtual size
 		Unit2 computedSize;
 		switch (this.satchelLayout) {
 			case NONE -> computedSize = computeNoLayoutSize();
@@ -108,6 +114,11 @@ public abstract class SuperWidget<T extends Component> {
 		}
 		this.computedSize.setX(computedSize.getX());
 		this.computedSize.setY(computedSize.getY());
+
+		// compute ref component size
+		this.ref.setSize(
+				this.computedSize.getX(),
+				this.computedSize.getY());
 	}
 
 	public abstract Unit2 computeNoLayoutSize();

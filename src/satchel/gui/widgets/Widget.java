@@ -11,6 +11,7 @@ import satchel.gui.abstracts.SuperWidget;
 import satchel.math.vectors.UDim2;
 import satchel.math.vectors.Unit2;
 import satchel.math.vectors.Vector2;
+import satchel.shared.util.Console;
 import satchel.shared.util.EventSignal;
 
 @SuppressWarnings("unused")
@@ -21,6 +22,16 @@ public class Widget<T extends JComponent> extends SuperWidget<T> {
 		super(ref);
 	}
 
+	// getters
+	public SuperWidget<?> getParent() {
+		return this.parent;
+	}
+
+	public boolean hasParent() {
+		return this.parent != null;
+	}
+
+	// setters
 	public void setParent(SuperWidget<?> parent) {
 		this.parent = parent;
 		parent.add(this);
@@ -36,6 +47,8 @@ public class Widget<T extends JComponent> extends SuperWidget<T> {
 	public Unit2 computeNoLayoutSize() {
 		UDim2 preferredSize = this.getPreferredSize();
 		Unit2 parentSize = this.parent.getComputedSize();
+		Console.println("Parent size: ", parentSize);
+		Console.println("Preferred size: ", preferredSize);
 		return new Unit2(
 				(int) (parentSize.getX() * preferredSize.getScaleX() + preferredSize.getOffsetX()),
 				(int) (parentSize.getY() * preferredSize.getScaleY() + preferredSize.getOffsetY()));

@@ -17,9 +17,10 @@ public class App {
 		Config.load();
 		// new TodoList();
 		// Console.println(Math.atan2(-0.5, 1));
-		// Window win = new Window();
+		Window win = new Window();
 		// WindowContainer mainFrame = new WindowContainer(win);
-		// Container content = new Container(mainFrame);
+		Container content = new Container(win);
+		content.setSize(0.5, 0, 0.5, 0);
 		// Console.println(mainFrame.getAbsoluteSize());
 
 	}
