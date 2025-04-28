@@ -104,36 +104,104 @@ public abstract class SuperWidget<T extends Component> {
 		this.maxSize.setScaleY(scaleY);
 		this.maxSize.setOffsetY(offsetY);
 		this.updateMaxSize();
-		this.updateComputedSize();
 	}
 
+	/**
+	 * Sets the minimum size that this {@code SuperWidget} can be using
+	 * {@code UDim2} components (scaleX, offsetX, scaleY, offsetX), and updates the
+	 * internal size class fields along with re-rendering the swing component's
+	 * size.
+	 * 
+	 * @param scaleX  an alpha value from {@code 0} to {@code 1} determining how
+	 *                much horizontal space this {@code SuperWidget} should occupy
+	 *                based on the implementation of {@code computeMinSize}
+	 * @param offsetX horizontal offset in pixels
+	 * @param scaleY  an alpha value from {@code 0} to {@code 1} determining how
+	 *                much vertical space this {@code SuperWidget} should occupy
+	 *                based on the implementation of {@code computeMinSize}
+	 * @param offsetY vertical offset in pixels
+	 * 
+	 * @see #updateMinSize
+	 */
 	public void setMinSize(double scaleX, int offsetX, double scaleY, int offsetY) {
 		this.minSize.setScaleX(scaleX);
 		this.minSize.setOffsetX(offsetX);
 		this.minSize.setScaleY(scaleY);
 		this.minSize.setOffsetY(offsetY);
 		this.updateMinSize();
-		this.updateComputedSize();
 	}
 
+	/**
+	 * Sets the layout to use for this {@code SuperWidget}, which determines how its
+	 * children will behave in terms of size, position, and visibility.
+	 * 
+	 * <p>
+	 * The available layout options are:
+	 * <ul>
+	 * <li>{@code NONE} - no layout is set; you have full control over the absolute
+	 * size and position of this {@code SuperWidget}</li>
+	 * </ul>
+	 * 
+	 * @param satchelLayout the {@code SatchelLayout} preset to use for this
+	 *                      {@code SuperWidget}
+	 */
 	public void setSatchelLayout(SatchelLayout satchelLayout) {
 		this.satchelLayout = satchelLayout;
 	}
 
+	/**
+	 * Adds a new child {@code Widget} to this {@code SuperWidget}. The top-level
+	 * behavior of this method is adding the child {@code Widget} to the internal
+	 * {@code children} array of this {@code SuperWidget}, but does <b>NOT</b> call
+	 * the {@code add} method from the {@code SuperWidget}'s rendered swing
+	 * component.
+	 * 
+	 * <p>
+	 * <b>Note:</b> You <i>must</i> override this method to manually add the child
+	 * swing component to this widget's swing component, while making sure to call
+	 * {@code super.add()} beforehand to ensure the child widget is kept track of by
+	 * the parent.
+	 * 
+	 * <p>
+	 * <b>Example:</b>
+	 * </p>
+	 * 
+	 * <pre>
+	 * <code>
+	 * &#64;Override
+	 * public void add(Widget<?> childWidget) {
+	 * 	super.add(childWidget);
+	 * 	this.getRef().add(childWidget.getRef());
+	 * }
+	 * </code>
+	 * </pre>
+	 * 
+	 * @param widget the {@code Widget} to add to this {@code SuperWidget}.
+	 */
 	public void add(Widget<?> widget) {
 		this.children.add(widget);
 	}
 
+	/**
+	 * Compute what the new {@code minSize} of this {@code SuperWidget}
+	 * <b>should</b> be and then update the internal {@code computedMinSize} field
+	 * along with rendering the widget's new size. Determining what the new
+	 * {@code minSize} should be is up to the manual implementation of
+	 * {@link #computedMinSize} in each subclass.
+	 */
 	private void updateMinSize() {
 		Unit2 newComputedMinSize = this.computeMinSize();
 		this.computedMinSize.setX(newComputedMinSize.getX());
 		this.computedMinSize.setY(newComputedMinSize.getY());
+		this.updateComputedSize();
 	}
 
 	/**
-	 * Compute what the new absolute max size of this widget <b>should</b> be and
-	 * then update the internal {@code computedMaxSize} field along with rendering
-	 * the widget's new size.
+	 * Compute what the new {@code maxSize} of this {@code SuperWidget}
+	 * <b>should</b> be and then update the internal {@code computedMaxSize} field
+	 * along with rendering the widget's new size. Determining what the new
+	 * {@code minSize} should be is up to the manual implementation of
+	 * {@link #computedMinSize} in each subclass.
 	 */
 	private void updateMaxSize() {
 		Unit2 newComputedMaxSize = this.computeMaxSize();
@@ -143,9 +211,9 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	/**
-	 * Compute what the new absolute size of this widget <b>should</b> be and then
-	 * update the internal {@code computedSize} field along with rendering the
-	 * widget's new size.
+	 * Compute what the new absolute size of this {@code SuperWidget} <b>should</b>
+	 * be and then update the internal {@code computedSize} field along with
+	 * rendering the widget's new size.
 	 */
 	private void updateComputedSize() {
 		Unit2 newComputedSize = this.computeSize();
@@ -158,15 +226,16 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	/**
-	 * Calculate what the current absolute size of the widget should be, based on
-	 * the widget's current {@code sizeMode} and other size constraints such as
-	 * {@code maxSize} and {@code minSize}.
+	 * Calculate what the current absolute size of this {@code SuperWidget}
+	 * <b>should</b> be, based on the widget's current {@code sizeMode} and other
+	 * size constraints such as {@code maxSize} and {@code minSize}.
 	 * 
 	 * <p>
-	 * <b>Note:</b> This will not update the rendered size of the widget, nor will
-	 * it update the internal field which stores the computed size. This is a pure
-	 * function, which will only re-compute what the widget's absolute size
-	 * <b>should</b> be, and then returns that result.
+	 * <b>Note:</b> This will not update the rendered size of the
+	 * {@code SuperWidget}, nor will it update the internal field which stores the
+	 * computed size. This is a pure function, which will only re-compute what the
+	 * {@code SuperWidget}'s absolute size <b>should</b> be, and then returns that
+	 * result.
 	 * 
 	 * <p>
 	 * This method will use the implemented methods by its subclasses for computing
@@ -174,9 +243,10 @@ public abstract class SuperWidget<T extends Component> {
 	 * {@code sizeMode}. For example, if the size mode {@code TRANSFORM} is used,
 	 * then this method will call the abstract method {@code computeTransformSize()}
 	 * to retrieve what the transform size should be for that specific
-	 * implementation of this widget.
+	 * implementation of this {@code SuperWidget}.
 	 * 
-	 * @return what the newly computed absolute size of the component should be
+	 * @return what the newly computed absolute size of the {@code SuperWidget}
+	 *         should be
 	 */
 	public Unit2 computeSize() {
 		// compute virtual size
