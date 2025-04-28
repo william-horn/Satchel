@@ -29,14 +29,14 @@ public class Container extends Widget<JPanel> {
 	public Container(SuperWidget<?> parent) {
 		this();
 		this.setParent(parent);
-		this.computeSize();
+		this.setSize(1, 0, 1, 0);
 	}
 
 	@Override
-	public Unit2 computeNoLayoutSize() {
+	public Unit2 computeTransformSize() {
 		if (!this.hasParent()) {
 			throw new Error("Cannot compute size of widget with no parent");
 		}
-		return super.computeNoLayoutSize();
+		return super.computeTransformSize();
 	}
 }

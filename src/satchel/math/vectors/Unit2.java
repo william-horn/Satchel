@@ -20,6 +20,10 @@ public class Unit2 extends BaseVector<Unit2> {
 		this.components = new double[] { x, y };
 	}
 
+	public Unit2(int all) {
+		this.components = new double[] { all, all };
+	}
+
 	// TODO: Add documentation
 	//
 	// Public getters

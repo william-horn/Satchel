@@ -25,7 +25,9 @@ import java.awt.Toolkit;
 
 @SuppressWarnings("unused")
 public class Window extends SuperWidget<JFrame> {
-	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	public static Unit2 screenSize = new Unit2(
+			(int) Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+			(int) Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 
 	public Window() {
 		super(new JFrame());
@@ -33,7 +35,10 @@ public class Window extends SuperWidget<JFrame> {
 		ref.setTitle("Unnamed");
 		ref.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ref.setLayout(null);
-		this.computeSize();
+
+		// call computeSize() before setLocationRelativeToNull
+		// this.computeSize();
+		this.setSize(1, 0, 1, 0);
 		ref.setLocationRelativeTo(null);
 		ref.setVisible(true);
 	}
@@ -45,10 +50,18 @@ public class Window extends SuperWidget<JFrame> {
 	}
 
 	@Override
-	public Unit2 computeNoLayoutSize() {
-		UDim2 preferredSize = this.getPreferredSize();
-		return new Unit2(
-				(int) (screenSize.getWidth() * preferredSize.getScaleX() + preferredSize.getOffsetX()),
-				(int) (screenSize.getHeight() * preferredSize.getScaleY() + preferredSize.getOffsetY()));
+	public Unit2 computeTransformSize() {
+		UDim2 transformSize = this.getTransformSize();
+		return transformSize.toComputedComponents(screenSize);
+	}
+
+	@Override
+	public Unit2 computeMaxSize() {
+		return this.getMaxSize().toComputedComponents(screenSize);
+	}
+
+	@Override
+	public Unit2 computeMinSize() {
+		return this.getMinSize().toComputedComponents(screenSize);
 	}
 }

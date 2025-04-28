@@ -20,6 +20,7 @@ public class App {
 		Window win = new Window();
 		// WindowContainer mainFrame = new WindowContainer(win);
 		Container content = new Container(win);
+		content.setMaxSize(0, 300, 0, 300);
 		content.setSize(0.5, 0, 0.5, 0);
 		// Console.println(mainFrame.getAbsoluteSize());
 

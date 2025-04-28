@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 import satchel.gui.widgets.Widget;
 import satchel.math.vectors.Vector2;
 import satchel.shared.util.Console;
+import satchel.math.util.MathUtils;
 import satchel.math.vectors.UDim2;
 import satchel.math.vectors.Unit2;
 
@@ -15,10 +16,12 @@ import satchel.math.vectors.Unit2;
 public abstract class SuperWidget<T extends Component> {
 	final private T ref;
 
-	private UDim2 maxSize = null;
-	private UDim2 minSize = null;
-	final private UDim2 preferredSize = new UDim2(1, 0, 1, 0);
-	final private Unit2 computedSize = new Unit2(0, 0);
+	final private UDim2 maxSize = new UDim2(Double.POSITIVE_INFINITY);
+	final private UDim2 minSize = new UDim2(Double.NEGATIVE_INFINITY);
+	final private Unit2 computedMaxSize = new Unit2(Integer.MAX_VALUE);
+	final private Unit2 computedMinSize = new Unit2(Integer.MIN_VALUE);
+	final private UDim2 transformSize = new UDim2(1, 0, 1, 0);
+	final private Unit2 computedSize = new Unit2(0);
 
 	private SizeMode sizeMode = SizeMode.TRANSFORM;
 	private SatchelLayout satchelLayout = SatchelLayout.NONE;
@@ -39,12 +42,12 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	// getters
-	public Unit2 getComputedSize() {
-		return this.computedSize;
+	public UDim2 getTransformSize() {
+		return this.transformSize;
 	}
 
-	public UDim2 getPreferredSize() {
-		return this.preferredSize;
+	public Unit2 getComputedSize() {
+		return this.computedSize;
 	}
 
 	public UDim2 getMaxSize() {
@@ -53,6 +56,14 @@ public abstract class SuperWidget<T extends Component> {
 
 	public UDim2 getMinSize() {
 		return this.minSize;
+	}
+
+	public Unit2 getComputedMaxSize() {
+		return this.computedMaxSize;
+	}
+
+	public Unit2 getComputedMinSize() {
+		return this.computedMinSize;
 	}
 
 	public ArrayList<Widget<?>> getChildren() {
@@ -73,10 +84,10 @@ public abstract class SuperWidget<T extends Component> {
 
 	// setters
 	public void setSize(double scaleX, int offsetX, double scaleY, int offsetY) {
-		this.preferredSize.setScaleX(scaleX);
-		this.preferredSize.setOffsetX(offsetX);
-		this.preferredSize.setScaleY(scaleY);
-		this.preferredSize.setOffsetY(offsetY);
+		this.transformSize.setScaleX(scaleX);
+		this.transformSize.setOffsetX(offsetX);
+		this.transformSize.setScaleY(scaleY);
+		this.transformSize.setOffsetY(offsetY);
 		this.computeSize();
 	}
 
@@ -87,13 +98,21 @@ public abstract class SuperWidget<T extends Component> {
 		this.computeSize();
 	}
 
-	public void setMaxSize(UDim2 maxSize) {
-		this.maxSize = maxSize;
+	public void setMaxSize(double scaleX, int offsetX, double scaleY, int offsetY) {
+		this.maxSize.setScaleX(scaleX);
+		this.maxSize.setOffsetX(offsetX);
+		this.maxSize.setScaleY(scaleY);
+		this.maxSize.setOffsetY(offsetY);
+		this.computeMaxSize();
 		this.computeSize();
 	}
 
-	public void setMinSize(UDim2 minSize) {
-		this.minSize = minSize;
+	public void setMinSize(double scaleX, int offsetX, double scaleY, int offsetY) {
+		this.minSize.setScaleX(scaleX);
+		this.minSize.setOffsetX(offsetX);
+		this.minSize.setScaleY(scaleY);
+		this.minSize.setOffsetY(offsetY);
+		this.computeMinSize();
 		this.computeSize();
 	}
 
@@ -105,15 +124,23 @@ public abstract class SuperWidget<T extends Component> {
 		this.children.add(widget);
 	}
 
-	public void computeSize() {
+	private void computeSize() {
 		// compute virtual size
 		Unit2 computedSize;
-		switch (this.satchelLayout) {
-			case NONE -> computedSize = computeNoLayoutSize();
+		switch (this.sizeMode) {
+			case TRANSFORM -> computedSize = computeTransformSize();
 			default -> throw new Error("No layout");
 		}
-		this.computedSize.setX(computedSize.getX());
-		this.computedSize.setY(computedSize.getY());
+		Unit2 maxSize = this.getComputedMaxSize();
+		Unit2 minSize = this.getComputedMinSize();
+		this.computedSize.setX((int) MathUtils.clamp(
+				computedSize.getX(),
+				minSize.getX(),
+				maxSize.getX()));
+		this.computedSize.setY((int) MathUtils.clamp(
+				computedSize.getY(),
+				minSize.getX(),
+				maxSize.getX()));
 
 		// compute ref component size
 		this.ref.setSize(
@@ -121,5 +148,9 @@ public abstract class SuperWidget<T extends Component> {
 				this.computedSize.getY());
 	}
 
-	public abstract Unit2 computeNoLayoutSize();
+	public abstract Unit2 computeTransformSize();
+
+	public abstract Unit2 computeMaxSize();
+
+	public abstract Unit2 computeMinSize();
 }

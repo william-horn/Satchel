@@ -19,6 +19,10 @@ public class Vector2 extends Vector<Vector2> {
 		this.components = new double[] { x, y };
 	}
 
+	public Vector2(double all) {
+		this.components = new double[] { all, all };
+	}
+
 	// TODO: Add documentation
 	//
 	// Public getters

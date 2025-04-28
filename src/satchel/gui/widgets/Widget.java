@@ -44,13 +44,21 @@ public class Widget<T extends JComponent> extends SuperWidget<T> {
 	}
 
 	@Override
-	public Unit2 computeNoLayoutSize() {
-		UDim2 preferredSize = this.getPreferredSize();
+	public Unit2 computeTransformSize() {
+		UDim2 transformSize = this.getTransformSize();
 		Unit2 parentSize = this.parent.getComputedSize();
-		Console.println("Parent size: ", parentSize);
-		Console.println("Preferred size: ", preferredSize);
-		return new Unit2(
-				(int) (parentSize.getX() * preferredSize.getScaleX() + preferredSize.getOffsetX()),
-				(int) (parentSize.getY() * preferredSize.getScaleY() + preferredSize.getOffsetY()));
+		return transformSize.toComputedComponents(parentSize);
+	}
+
+	@Override
+	public Unit2 computeMaxSize() {
+		Unit2 parentSize = this.parent.getComputedSize();
+		return this.getMaxSize().toComputedComponents(parentSize);
+	}
+
+	@Override
+	public Unit2 computeMinSize() {
+		Unit2 parentSize = this.parent.getComputedSize();
+		return this.getMinSize().toComputedComponents(parentSize);
 	}
 }

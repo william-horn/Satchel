@@ -20,6 +20,10 @@ public class UDim2 extends Vector<UDim2> {
 				offsetY };
 	}
 
+	public UDim2(double all) {
+		this.components = new double[] { all, all, all, all };
+	}
+
 	// TODO: Add documentation
 	// getters
 	public double getScaleX() {
@@ -36,6 +40,12 @@ public class UDim2 extends Vector<UDim2> {
 
 	public double getOffsetY() {
 		return this.get(3);
+	}
+
+	public Unit2 toComputedComponents(Unit2 bounds) {
+		return new Unit2(
+				(int) (bounds.getX() * this.getScaleX() + this.getOffsetX()),
+				(int) (bounds.getY() * this.getScaleY() + this.getOffsetY()));
 	}
 
 	// setters
