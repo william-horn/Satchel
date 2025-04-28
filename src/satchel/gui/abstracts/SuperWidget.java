@@ -83,19 +83,19 @@ public abstract class SuperWidget<T extends Component> {
 	}
 
 	// setters
-	public void setSize(double scaleX, int offsetX, double scaleY, int offsetY) {
+	public void setTransformSize(double scaleX, int offsetX, double scaleY, int offsetY) {
 		this.transformSize.setScaleX(scaleX);
 		this.transformSize.setOffsetX(offsetX);
 		this.transformSize.setScaleY(scaleY);
 		this.transformSize.setOffsetY(offsetY);
-		this.computeSize();
+		this.updateComputedSize();
 	}
 
 	public void setSizeMode(SizeMode sizeMode) {
 		if (this.sizeMode == sizeMode)
 			return;
 		this.sizeMode = sizeMode;
-		this.computeSize();
+		this.updateComputedSize();
 	}
 
 	public void setMaxSize(double scaleX, int offsetX, double scaleY, int offsetY) {
@@ -103,8 +103,8 @@ public abstract class SuperWidget<T extends Component> {
 		this.maxSize.setOffsetX(offsetX);
 		this.maxSize.setScaleY(scaleY);
 		this.maxSize.setOffsetY(offsetY);
-		this.computeMaxSize();
-		this.computeSize();
+		this.updateMaxSize();
+		this.updateComputedSize();
 	}
 
 	public void setMinSize(double scaleX, int offsetX, double scaleY, int offsetY) {
@@ -112,8 +112,8 @@ public abstract class SuperWidget<T extends Component> {
 		this.minSize.setOffsetX(offsetX);
 		this.minSize.setScaleY(scaleY);
 		this.minSize.setOffsetY(offsetY);
-		this.computeMinSize();
-		this.computeSize();
+		this.updateMinSize();
+		this.updateComputedSize();
 	}
 
 	public void setSatchelLayout(SatchelLayout satchelLayout) {
@@ -124,33 +124,116 @@ public abstract class SuperWidget<T extends Component> {
 		this.children.add(widget);
 	}
 
-	private void computeSize() {
+	private void updateMinSize() {
+		Unit2 newComputedMinSize = this.computeMinSize();
+		this.computedMinSize.setX(newComputedMinSize.getX());
+		this.computedMinSize.setY(newComputedMinSize.getY());
+	}
+
+	/**
+	 * Compute what the new absolute max size of this widget <b>should</b> be and
+	 * then update the internal {@code computedMaxSize} field along with rendering
+	 * the widget's new size.
+	 */
+	private void updateMaxSize() {
+		Unit2 newComputedMaxSize = this.computeMaxSize();
+		this.computedMaxSize.setX(newComputedMaxSize.getX());
+		this.computedMaxSize.setY(newComputedMaxSize.getY());
+		this.updateComputedSize();
+	}
+
+	/**
+	 * Compute what the new absolute size of this widget <b>should</b> be and then
+	 * update the internal {@code computedSize} field along with rendering the
+	 * widget's new size.
+	 */
+	private void updateComputedSize() {
+		Unit2 newComputedSize = this.computeSize();
+		this.computedSize.setX(newComputedSize.getX());
+		this.computedSize.setY(newComputedSize.getY());
+
+		this.ref.setSize(
+				this.computedSize.getX(),
+				this.computedSize.getY());
+	}
+
+	/**
+	 * Calculate what the current absolute size of the widget should be, based on
+	 * the widget's current {@code sizeMode} and other size constraints such as
+	 * {@code maxSize} and {@code minSize}.
+	 * 
+	 * <p>
+	 * <b>Note:</b> This will not update the rendered size of the widget, nor will
+	 * it update the internal field which stores the computed size. This is a pure
+	 * function, which will only re-compute what the widget's absolute size
+	 * <b>should</b> be, and then returns that result.
+	 * 
+	 * <p>
+	 * This method will use the implemented methods by its subclasses for computing
+	 * what its absolute size should be based on the currently set
+	 * {@code sizeMode}. For example, if the size mode {@code TRANSFORM} is used,
+	 * then this method will call the abstract method {@code computeTransformSize()}
+	 * to retrieve what the transform size should be for that specific
+	 * implementation of this widget.
+	 * 
+	 * @return what the newly computed absolute size of the component should be
+	 */
+	public Unit2 computeSize() {
 		// compute virtual size
 		Unit2 computedSize;
 		switch (this.sizeMode) {
 			case TRANSFORM -> computedSize = computeTransformSize();
 			default -> throw new Error("No layout");
 		}
+
+		// apply constraints
 		Unit2 maxSize = this.getComputedMaxSize();
 		Unit2 minSize = this.getComputedMinSize();
-		this.computedSize.setX((int) MathUtils.clamp(
+		computedSize.setX((int) MathUtils.clamp(
 				computedSize.getX(),
 				minSize.getX(),
 				maxSize.getX()));
-		this.computedSize.setY((int) MathUtils.clamp(
+		computedSize.setY((int) MathUtils.clamp(
 				computedSize.getY(),
-				minSize.getX(),
-				maxSize.getX()));
+				minSize.getY(),
+				maxSize.getY()));
 
-		// compute ref component size
-		this.ref.setSize(
-				this.computedSize.getX(),
-				this.computedSize.getY());
+		return computedSize;
 	}
 
+	/**
+	 * A custom implementation of what this widget's size <b>should</b> be when
+	 * using size mode {@code TRANSFORM}.
+	 * 
+	 * <p>
+	 * The main purpose of this abstract method is to differentiate between the
+	 * Widget and Window class, since they both inherit from SuperWidget. For
+	 * example, the Window object will compute its transform size (scale and offset)
+	 * with respect to the screen resolution, whereas Widgets compute their
+	 * transform size based on their SuperWidget parent, which can be a Window or
+	 * another Widget.
+	 * 
+	 * @return the newly computed transform size in {@code Unit2} pixels with
+	 *         respect to some container boundaries such as the parent's absolute
+	 *         size, or screen size if the SuperWidget is a Window.
+	 */
 	public abstract Unit2 computeTransformSize();
 
+	/**
+	 * A custom implementation of what this widget's {@code maxSize} <b>should</b>
+	 * be in {@Code Unit2} pixels.
+	 * 
+	 * @return the newly computed {@code maxSize} of the widget in {@code Unit2}
+	 *         pixels
+	 */
 	public abstract Unit2 computeMaxSize();
 
+	/**
+	 * A custom implementation of what this widget's {@code minSize} <b>should</b>
+	 * be in {@Code Unit2} pixels.
+	 * 
+	 * @return the newly computed {@code minSize} of the widget in {@code Unit2}
+	 *         pixels
+	 */
 	public abstract Unit2 computeMinSize();
 }

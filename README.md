@@ -46,7 +46,7 @@ import gui.widgets.WindowContainer;
 
 // create a new window with custom initialized settings
 Window window = new Window(self -> {
-	self.setSize(500, 500);
+	self.setTransformSize(500, 500);
 	self.setBackground(Color.BLUE);
 	self.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE));
 });

@@ -29,7 +29,7 @@ public class Container extends Widget<JPanel> {
 	public Container(SuperWidget<?> parent) {
 		this();
 		this.setParent(parent);
-		this.setSize(1, 0, 1, 0);
+		this.setTransformSize(1, 0, 1, 0);
 	}
 
 	@Override

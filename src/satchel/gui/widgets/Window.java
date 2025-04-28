@@ -38,7 +38,7 @@ public class Window extends SuperWidget<JFrame> {
 
 		// call computeSize() before setLocationRelativeToNull
 		// this.computeSize();
-		this.setSize(1, 0, 1, 0);
+		this.setTransformSize(1, 0, 1, 0);
 		ref.setLocationRelativeTo(null);
 		ref.setVisible(true);
 	}
