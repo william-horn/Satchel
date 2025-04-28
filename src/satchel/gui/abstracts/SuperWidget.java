@@ -66,23 +66,49 @@ public abstract class SuperWidget<T extends Component> {
 		return this.computedMinSize;
 	}
 
+	/**
+	 * @return the array list of child {@code Widget} objects within this
+	 *         {@code SuperWidget}.
+	 */
 	public ArrayList<Widget<?>> getChildren() {
 		return this.children;
 	}
 
+	/**
+	 * @return the inner java swing component of this {@code SuperWidget}
+	 */
 	public T getRef() {
 		return this.ref;
 	}
 
+	/**
+	 * @return the size mode that this {@code SuperWidget} is currently set to
+	 */
 	public SizeMode getSizeMode() {
 		return this.sizeMode;
 	}
 
+	/**
+	 * @return the layout preset this {@code SuperWidget} is currently using
+	 */
 	public SatchelLayout getSatchelLayout() {
 		return this.satchelLayout;
 	}
 
 	// setters
+	/**
+	 * Set the transform size of this {@code SuperWidget} using {@code UDim2}
+	 * components (scaleX, offsetX, scaleY, offsetX).
+	 * 
+	 * @param scaleX  an alpha value from {@code 0} to {@code 1} determining how
+	 *                much horizontal space this {@code SuperWidget} should occupy
+	 *                based on the implementation of {@code computeMinSize}
+	 * @param offsetX horizontal offset in pixels
+	 * @param scaleY  an alpha value from {@code 0} to {@code 1} determining how
+	 *                much vertical space this {@code SuperWidget} should occupy
+	 *                based on the implementation of {@code computeMinSize}
+	 * @param offsetY vertical offset in pixels
+	 */
 	public void setTransformSize(double scaleX, int offsetX, double scaleY, int offsetY) {
 		this.transformSize.setScaleX(scaleX);
 		this.transformSize.setOffsetX(offsetX);
@@ -91,6 +117,22 @@ public abstract class SuperWidget<T extends Component> {
 		this.updateComputedSize();
 	}
 
+	/**
+	 * Set the {@code sizeMode} of this {@code SuperWidget}.
+	 * 
+	 * <p>
+	 * {@code sizeMode} determines how this {@code SuperWidget}'s size is
+	 * calculated. The current size modes are:
+	 * 
+	 * <ul>
+	 * <li>{@code TRANSFORM} - use {@code UDim2} to calculate size based on scale
+	 * and offset</li>
+	 * <li>{@code FIT_CONTENT} - automatically set the size of this
+	 * {@code SuperWidget} to the total size of its children</li>
+	 * </ul>
+	 * 
+	 * @param sizeMode
+	 */
 	public void setSizeMode(SizeMode sizeMode) {
 		if (this.sizeMode == sizeMode)
 			return;
@@ -98,6 +140,22 @@ public abstract class SuperWidget<T extends Component> {
 		this.updateComputedSize();
 	}
 
+	/**
+	 * Sets the maximum size that this {@code SuperWidget} can be using
+	 * {@code UDim2} components (scaleX, offsetX, scaleY, offsetX), and updates the
+	 * internal size along with re-rendering the swing component's size.
+	 * 
+	 * @param scaleX  an alpha value from {@code 0} to {@code 1} determining how
+	 *                much horizontal space this {@code SuperWidget} should occupy
+	 *                based on the implementation of {@code computeMaxSize}
+	 * @param offsetX horizontal offset in pixels
+	 * @param scaleY  an alpha value from {@code 0} to {@code 1} determining how
+	 *                much vertical space this {@code SuperWidget} should occupy
+	 *                based on the implementation of {@code computeMaxSize}
+	 * @param offsetY vertical offset in pixels
+	 * 
+	 * @see #updateMaxSize
+	 */
 	public void setMaxSize(double scaleX, int offsetX, double scaleY, int offsetY) {
 		this.maxSize.setScaleX(scaleX);
 		this.maxSize.setOffsetX(offsetX);
@@ -109,8 +167,7 @@ public abstract class SuperWidget<T extends Component> {
 	/**
 	 * Sets the minimum size that this {@code SuperWidget} can be using
 	 * {@code UDim2} components (scaleX, offsetX, scaleY, offsetX), and updates the
-	 * internal size class fields along with re-rendering the swing component's
-	 * size.
+	 * internal size along with re-rendering the swing component's size.
 	 * 
 	 * @param scaleX  an alpha value from {@code 0} to {@code 1} determining how
 	 *                much horizontal space this {@code SuperWidget} should occupy

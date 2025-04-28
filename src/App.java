@@ -1,9 +1,9 @@
 import javax.swing.JPanel;
 
+import satchel.gui.Window;
 import satchel.gui.apps.TodoList;
 import satchel.gui.widgets.Container;
 import satchel.gui.widgets.Widget;
-import satchel.gui.widgets.Window;
 import satchel.math.vectors.Vector2;
 import satchel.shared.util.Config;
 import satchel.shared.util.Console;
@@ -20,8 +20,8 @@ public class App {
 		Window win = new Window();
 		// WindowContainer mainFrame = new WindowContainer(win);
 		Container content = new Container(win);
-		content.setMaxSize(0, 300, 0, 300);
-		content.setTransformSize(0.5, 0, 0.5, 0);
+		content.setTransformSize(0.8, 500, 0.5, 0);
+		content.setMaxSize(0.5, 0, 1, 0);
 		// Console.println(mainFrame.getAbsoluteSize());
 
 	}

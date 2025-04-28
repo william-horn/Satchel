@@ -2,13 +2,14 @@
  * @author: William J. Horn
  * github: https://github.com/william-horn
  */
-package satchel.gui.widgets;
+package satchel.gui;
 
 import javax.swing.JFrame;
 
 import satchel.gui.abstracts.SuperWidget;
 import satchel.gui.interfaces.WidgetListener;
 import satchel.gui.interfaces.WindowInitializer;
+import satchel.gui.widgets.Widget;
 import satchel.math.vectors.UDim2;
 import satchel.math.vectors.Unit2;
 import satchel.shared.interfaces.VoidGenericCallback;

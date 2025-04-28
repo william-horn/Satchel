@@ -1,6 +1,6 @@
 package satchel.gui.interfaces;
 
-import satchel.gui.widgets.Window;
+import satchel.gui.Window;
 
 public interface WindowInitializer {
 	void init(Window window);
